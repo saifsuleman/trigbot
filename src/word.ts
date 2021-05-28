@@ -46,7 +46,7 @@ function isWord(object: any): object is Word {
 export function getEmbed(
   content: Word | TrigQuote,
   query: string,
-  footer: string | undefined
+  footer: string = ""
 ): MessageEmbed {
   if (isWord(content)) {
     const word = content as Word;
@@ -60,7 +60,6 @@ export function getEmbed(
         { name: "Translation:", value: word.translation },
         { name: "Etymology:", value: word.etymology }
       );
-    if (footer) embed = embed.setFooter(footer);
     return embed;
   }
 
