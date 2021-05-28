@@ -1,8 +1,7 @@
-import axios from "axios";
-import { Message, MessageEmbed } from "discord.js";
+import { Message } from "discord.js";
 import Command from "../command";
 import CommandHandler from "../commandhandler";
-import Word from "../word";
+import { has } from "../utils";
 
 export default class DefineCommand implements Command {
   id: string;
@@ -22,7 +21,7 @@ export default class DefineCommand implements Command {
     const query = args.join(" ");
     const words = this.commandHandler.bot
       .getDictionary()
-      .filter((word) => word.word.toLowerCase() === query.toLowerCase());
-    await this.commandHandler.bot.defineWords(words, m);
+      .filter((word) => has(query, word.word));
+    await this.commandHandler.bot.defineWords(words, m, args.join(" "));
   }
 }

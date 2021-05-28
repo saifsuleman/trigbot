@@ -1,14 +1,15 @@
-import discord, { Message } from "discord.js";
+import { Message } from "discord.js";
 import Command from "../command";
 import CommandHandler from "../commandhandler";
-import Word from "../word";
+import { has } from "../utils";
+import { TrigQuote, Word } from "../word";
 
 export default class FindWordCommand implements Command {
   id: string;
   commandHandler: CommandHandler;
 
   constructor(commandHandler: CommandHandler) {
-    this.id = "findword";
+    this.id = "find";
     this.commandHandler = commandHandler;
   }
 
@@ -19,31 +20,26 @@ export default class FindWordCommand implements Command {
     }
 
     const query = args.join(" ");
-    const has: (text: string) => boolean = (text: string) => {
-      const index = text.toLowerCase().indexOf(query.toLowerCase());
-      if (index === -1) {
-        return false;
-      }
-
-      if (index > 0 && text[index - 1].match(/[a-zA-Z]/)) {
-        return false;
-      }
-
-      if (index + query.length < text.length) {
-        if (text[index + query.length].match(/[a-zA-Z]/)) {
-          return false;
-        }
-      }
-
-      return true;
-    };
-
-    const words = this.commandHandler.bot
+    const wordFilter = (word: Word) =>
+      has(query, word.word) ||
+      has(query, word.translation) ||
+      has(query, word.etymology);
+    const words: (TrigQuote | Word)[] = this.commandHandler.bot
       .getDictionary()
-      .filter(
-        (word) => has(word.word) || has(word.translation) || has(word.etymology)
-      );
-    await this.commandHandler.bot.defineWords(words, m);
-    console.log(words.length);
+      .filter(wordFilter);
+
+    const quoteFilter = (quote: TrigQuote) =>
+      has(query, quote.translation) ||
+      has(query, quote.trigedasleng) ||
+      has(query, quote.etymology);
+    const quotes: (TrigQuote | Word)[] = this.commandHandler.bot
+      .getTranslations()
+      .filter(quoteFilter);
+
+    await this.commandHandler.bot.defineWords(
+      words.concat(quotes),
+      m,
+      args.join(" ")
+    );
   }
 }

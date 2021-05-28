@@ -1,21 +1,32 @@
 import axios from "axios";
 import discord, { Message, MessageEmbed, MessageReaction } from "discord.js";
 import CommandHandler from "./commandhandler";
-import Word from "./word";
+import { Word, getEmbed, TrigQuote } from "./word";
+import dotenv from "dotenv";
 
 export default class Bot extends discord.Client {
   private commandHandler: CommandHandler;
+
   private dictionary: Word[];
+  private translations: TrigQuote[];
 
   public getDictionary(): Word[] {
     return this.dictionary;
   }
 
+  public getTranslations(): TrigQuote[] {
+    return this.translations;
+  }
+
   constructor() {
     super();
     this.commandHandler = new CommandHandler(this, "+");
+
     this.dictionary = [];
+    this.translations = [];
+
     this.fetchDictionary();
+    this.fetchTranslations();
 
     this.on("ready", () => {
       if (this.user) console.log(`Connected as: ${this.user.tag}`);
@@ -34,29 +45,22 @@ export default class Bot extends discord.Client {
     return this.dictionary;
   }
 
-  public async defineWords(words: Word[], m: Message) {
-    const getColour = (word: Word) => {
-      switch (word.filter) {
-        case "canon":
-          return "#ad0000";
-        case "noncanon":
-          return "e36600";
-      }
+  private async fetchTranslations(): Promise<TrigQuote[]> {
+    const res = await axios.get(
+      "https://trigedasleng.net/api/legacy/translations"
+    );
+    this.translations = res.data as TrigQuote[];
+    return this.translations;
+  }
 
-      return "#90c900";
-    };
-
+  public async defineWords(
+    words: (Word | TrigQuote)[],
+    m: Message,
+    query: string
+  ) {
     const define = async (i: number) => {
       const word = words[i];
-      let embed = new MessageEmbed()
-        .setTitle(word.word)
-        .setFooter(`[${i + 1} / ${words.length}]`)
-        .setColor(getColour(word))
-        .addFields(
-          { name: "Word", value: word.word },
-          { name: "Translation", value: word.translation },
-          { name: "Etymology", value: word.etymology }
-        );
+      const embed = getEmbed(word, query, `${i + 1} / ${words.length}`);
       const message = await m.channel.send(embed);
 
       if (i > 0) {
@@ -86,5 +90,6 @@ export default class Bot extends discord.Client {
   }
 }
 
+dotenv.config();
 const bot = new Bot();
 bot.login(process.env["TOKEN"]);
