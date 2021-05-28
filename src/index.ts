@@ -2,10 +2,6 @@ import axios from "axios";
 import discord, { Message, MessageEmbed, MessageReaction } from "discord.js";
 import CommandHandler from "./commandhandler";
 import Word from "./word";
-import disbut from "discord-buttons";
-
-const TOKEN: string =
-  "Njc5MjY0NzgxMTA1ODg5Mjgw.Xku0nw.8MI-nxGyuTQfJ2_B2vfmeRkSW_s";
 
 export default class Bot extends discord.Client {
   private commandHandler: CommandHandler;
@@ -91,4 +87,4 @@ export default class Bot extends discord.Client {
 }
 
 const bot = new Bot();
-bot.login(TOKEN);
+bot.login(process.env["TOKEN"]);
