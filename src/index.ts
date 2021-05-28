@@ -67,7 +67,7 @@ export default class Bot extends discord.Client {
       );
       let message = previousMessage;
       if (message) {
-        // await message.reactions.removeAll();
+        await message.reactions.removeAll().catch(() => {});
         await message.edit(embed);
       } else {
         message = await m.channel.send(embed);
