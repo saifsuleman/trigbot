@@ -58,22 +58,27 @@ export default class Bot extends discord.Client {
     m: Message,
     query: string
   ) {
-    const define = async (i: number) => {
+    const define = async (i: number, previousMessage?: Message) => {
       const word = words[i];
       const embed = getEmbed(
         word,
         query,
         words.length > 1 ? `${i + 1} / ${words.length}` : undefined
       );
-      const message = await m.channel.send(embed);
+      let message = previousMessage;
+      if (message) {
+        await message.reactions.removeAll();
+        await message.edit(embed);
+      } else {
+        message = await m.channel.send(embed);
+      }
 
       if (i > 0) {
         await message.react("◀️");
         const filter = (r: MessageReaction) => r.emoji.name === "◀️";
         const collector = message.createReactionCollector(filter);
         collector.on("collect", async () => {
-          await message.delete();
-          await define(i - 1);
+          await define(i - 1, message);
         });
       }
 
@@ -82,8 +87,7 @@ export default class Bot extends discord.Client {
         const filter = (r: MessageReaction) => r.emoji.name === "▶️";
         const collector = message.createReactionCollector(filter);
         collector.on("collect", async () => {
-          await message.delete();
-          await define(i + 1);
+          await define(i + 1, message);
         });
       }
     };
