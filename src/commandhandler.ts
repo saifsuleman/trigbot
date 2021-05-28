@@ -54,7 +54,7 @@ export default class CommandHandler {
         (whitelist) => whitelist.guild === guildId
       );
       console.log(`${guildId} - ${channelId} - ${whitelist != undefined}`);
-      if (whitelist && !(channelId in whitelist.channels)) {
+      if (whitelist && !whitelist.channels.includes(channelId)) {
         return;
       }
     }
