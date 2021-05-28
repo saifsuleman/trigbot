@@ -59,9 +59,8 @@ export function getEmbed(
         { name: "Translation:", value: word.translation },
         { name: "Etymology:", value: word.etymology }
       );
-    if (footer) {
-      embed = embed.setFooter(footer);
-    }
+    if (footer) embed = embed.setFooter(footer);
+    return embed;
   }
 
   const quote = content as TrigQuote;
@@ -74,8 +73,7 @@ export function getEmbed(
       { name: "Translation:", value: quote.translation },
       { name: "Episode:", value: quote.episode }
     );
-  if (quote.speaker !== "") {
+  if (quote.speaker !== "")
     embed = embed.addFields({ name: "Speaker", value: quote.speaker });
-  }
   return embed;
 }
