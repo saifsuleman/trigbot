@@ -50,12 +50,13 @@ export function getEmbed(
 ): MessageEmbed {
   if (isWord(content)) {
     const word = content as Word;
+    const words = word.word.split(" ").length;
     let embed = new MessageEmbed()
       .setTitle(`Definition: ${query}`)
       .setFooter(footer)
       .setColor(getColour(word))
       .addFields(
-        { name: "Word:", value: word.word },
+        { name: words > 1 ? "Phrase:" : "Word:", value: word.word },
         { name: "Translation:", value: word.translation },
         { name: "Etymology:", value: word.etymology }
       );
