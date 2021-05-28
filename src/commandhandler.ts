@@ -1,3 +1,4 @@
+import { channel } from "diagnostic_channel";
 import { Message, User } from "discord.js";
 import Bot from ".";
 import Command from "./command";
@@ -28,6 +29,34 @@ export default class CommandHandler {
 
   public async onMessage(message: Message): Promise<void> {
     if (!message.content.startsWith(this.prefix)) return;
+
+    interface IWhitelist {
+      guild: string;
+      channels: string[];
+    }
+    const whitelists: IWhitelist[] = [
+      {
+        guild: "599400943389376533",
+        channels: [
+          "599419848652488704",
+          "599410789987778568",
+          "599419761410965523",
+          "600728137633890317",
+        ],
+      },
+    ];
+
+    const guildId = message.guild?.id;
+    const channelId = message.channel?.id;
+
+    if (guildId && channelId) {
+      const whitelist = whitelists.find(
+        (whitelist) => whitelist.guild === guildId
+      );
+      if (whitelist && !(channelId in whitelist.channels)) {
+        return;
+      }
+    }
 
     const content: string = message.content.substring(this.prefix.length);
     if (!content.length) return;

@@ -60,7 +60,11 @@ export default class Bot extends discord.Client {
   ) {
     const define = async (i: number) => {
       const word = words[i];
-      const embed = getEmbed(word, query, `${i + 1} / ${words.length}`);
+      const embed = getEmbed(
+        word,
+        query,
+        words.length > 1 ? `${i + 1} / ${words.length}` : undefined
+      );
       const message = await m.channel.send(embed);
 
       if (i > 0) {

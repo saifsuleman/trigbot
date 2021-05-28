@@ -46,19 +46,22 @@ function isWord(object: any): object is Word {
 export function getEmbed(
   content: Word | TrigQuote,
   query: string,
-  footer: string = ""
+  footer: string | undefined
 ): MessageEmbed {
   if (isWord(content)) {
     const word = content as Word;
-    return new MessageEmbed()
+    let embed = new MessageEmbed()
       .setTitle(`Definition: ${query}`)
       .setFooter(footer)
       .setColor(getColour(word))
       .addFields(
-        { name: "Word", value: word.word },
-        { name: "Translation", value: word.translation },
-        { name: "Etymology", value: word.etymology }
+        { name: "Word:", value: word.word },
+        { name: "Translation:", value: word.translation },
+        { name: "Etymology:", value: word.etymology }
       );
+    if (footer) {
+      embed = embed.setFooter(footer);
+    }
   }
 
   const quote = content as TrigQuote;
@@ -67,9 +70,9 @@ export function getEmbed(
     .setFooter(footer)
     .setColor(getColour(quote))
     .addFields(
-      { name: "Trigedasleng", value: quote.trigedasleng },
-      { name: "Translation", value: quote.translation },
-      { name: "Episode", value: quote.episode }
+      { name: "Trigedasleng:", value: quote.trigedasleng },
+      { name: "Translation:", value: quote.translation },
+      { name: "Episode:", value: quote.episode }
     );
   if (quote.speaker !== "") {
     embed = embed.addFields({ name: "Speaker", value: quote.speaker });
