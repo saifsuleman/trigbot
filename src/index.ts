@@ -63,39 +63,48 @@ export default class Bot extends discord.Client {
     m: Message,
     query: string
   ) {
-    const define = async (i: number, previousMessage?: Message) => {
-      const word = words[i];
-      const embed = getEmbed(
-        word,
-        query,
-        words.length > 1 ? `${i + 1} / ${words.length}` : undefined
-      );
-      const message = previousMessage
-        ? await previousMessage.edit(embed)
-        : await m.channel.send(embed);
+    let page: number = 0;
 
-      await message.react("◀️");
-      await message.react("▶️");
-
+    const createCollector = async (message: Message) => {
       const filter = (r: MessageReaction) =>
         ["◀️", "▶️"].includes(r.emoji.name);
       const collector = message.createReactionCollector(filter, {
         dispose: true,
       });
 
-      const callback = async (reaction: MessageReaction) => {
-        collector.off("collect", callback);
-        collector.off("remove", callback);
-
-        if (reaction.emoji.name === "◀️") await define(i - 1, message);
-        if (reaction.emoji.name === "▶️") await define(i + 1, message);
+      const callback = async (r: MessageReaction) => {
+        if (r.emoji.name === "◀️") {
+          page = Math.max(page - 1, 0);
+        }
+        if (r.emoji.name === "▶️") {
+          page = Math.min(page + 1, words.length - 1);
+        }
+        await define(message);
       };
       collector.on("collect", callback);
       collector.on("remove", callback);
     };
 
+    const define = async (previousMessage?: Message) => {
+      const word = words[page];
+      const embed = getEmbed(
+        word,
+        query,
+        words.length > 1 ? `${page + 1} / ${words.length}` : undefined
+      );
+      const message = previousMessage
+        ? await previousMessage.edit(embed)
+        : await m.channel.send(embed);
+
+      if (!previousMessage) {
+        await message.react("◀️");
+        await message.react("▶️");
+        await createCollector(message);
+      }
+    };
+
     words.length
-      ? define(0)
+      ? define()
       : await m.channel.send(":x: No matches found for that query.");
   }
 }

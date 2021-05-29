@@ -46,8 +46,8 @@ export default class CommandHandler {
       },
     ];
 
-    const guildId = message.guild?.id;
-    const channelId = message.channel?.id;
+    const guildId = message.guild ? message.guild.id : undefined;
+    const channelId = message.channel.id;
 
     if (guildId && channelId) {
       const whitelist = whitelists.find(
