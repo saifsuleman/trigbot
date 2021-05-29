@@ -91,7 +91,7 @@ export default class Bot extends discord.Client {
         if (reaction.emoji.name === "▶️") await define(i + 1, message);
       };
       collector.on("collect", callback);
-      collector.on("remove", callback);
+      collector.on("dispose", callback);
     };
 
     words.length
