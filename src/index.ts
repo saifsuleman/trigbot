@@ -1,5 +1,10 @@
 import axios from "axios";
-import discord, { Message, MessageEmbed, MessageReaction } from "discord.js";
+import discord, {
+  Message,
+  MessageEmbed,
+  MessageReaction,
+  ReactionCollector,
+} from "discord.js";
 import CommandHandler from "./commandhandler";
 import { Word, getEmbed, TrigQuote } from "./word";
 import dotenv from "dotenv";
@@ -58,8 +63,11 @@ export default class Bot extends discord.Client {
     m: Message,
     query: string
   ) {
-    const define = async (i: number, previousMessage?: Message) => {
-      console.log(`i: ${i}`);
+    const define = async (
+      i: number,
+      previousMessage?: Message,
+      collector?: ReactionCollector
+    ) => {
       const word = words[i];
       const embed = getEmbed(
         word,
@@ -70,21 +78,21 @@ export default class Bot extends discord.Client {
         ? await previousMessage.edit(embed)
         : await m.channel.send(embed);
 
-      const createButton = async (emoji: string, page: number) => {
-        await message.react(emoji);
-        const filter = (r: MessageReaction) => r.emoji.name === emoji;
-        const collector = message.createReactionCollector(filter);
-        const callback = async () => {
-          console.log(`Button pushed: ${emoji}: ${page}`);
-          await define(page, message);
+      if (!collector) {
+        const createButton = async (emoji: string, pageOffset: number) => {
+          await message.react(emoji);
+          const filter = (r: MessageReaction) => r.emoji.name === emoji;
+          const collector = message.createReactionCollector(filter);
+          const callback = async () => {
+            await define((i + pageOffset) % words.length, message, collector);
+          };
+          collector.on("collect", callback);
+          collector.on("remove", callback);
         };
-        collector.on("collect", callback);
-        collector.on("remove", callback);
-        collector.on("end", () => console.log("I've been killed."));
-      };
 
-      await createButton("◀️", (i - 1) % words.length);
-      await createButton("▶️", (i + 1) % words.length);
+        await createButton("◀️", -1);
+        await createButton("▶️", 1);
+      }
     };
 
     words.length
