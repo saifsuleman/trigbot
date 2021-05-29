@@ -78,22 +78,24 @@ export default class Bot extends discord.Client {
         ? await previousMessage.edit(embed)
         : await m.channel.send(embed);
 
-      if (!collector) {
-        const createButton = async (emoji: string, pageOffset: number) => {
-          await message.react(emoji);
-          const filter = (r: MessageReaction) => r.emoji.name === emoji;
-          const collector = message.createReactionCollector(filter);
-          const callback = async () => {
-            console.log(`Traversing to ${(i + pageOffset) % words.length}`);
-            await define((i + pageOffset) % words.length, message, collector);
-          };
-          collector.on("collect", callback);
-          collector.on("remove", callback);
-        };
+      const createButton = async (emoji: string, pageOffset: number) => {
+        await message.react(emoji);
 
-        await createButton("◀️", -1);
-        await createButton("▶️", 1);
-      }
+        if (!collector) {
+          const filter = (r: MessageReaction) => r.emoji.name === emoji;
+          collector = message.createReactionCollector(filter);
+        }
+
+        const callback = async () => {
+          console.log(`Traversing to ${(i + pageOffset) % words.length}`);
+          await define((i + pageOffset) % words.length, message);
+        };
+        collector.on("collect", callback);
+        collector.on("remove", callback);
+      };
+
+      await createButton("◀️", -1);
+      await createButton("▶️", 1);
     };
 
     words.length
