@@ -79,8 +79,8 @@ export default class Bot extends discord.Client {
         collector.on("remove", callback);
       };
 
-      await createButton("◀️", Math.max(i - 1, 0));
-      await createButton("▶️", Math.min(i + 1, words.length - 1));
+      await createButton("◀️", (i - 1) % words.length);
+      await createButton("▶️", (i + 1) % words.length);
     };
 
     words.length
