@@ -4,6 +4,7 @@ import Bot from ".";
 import Command from "./command";
 import DefineCommand from "./commands/definecommand";
 import FindWordCommand from "./commands/findwordcommand";
+import TranslationsCommand from "./commands/translationscommand";
 
 export default class CommandHandler {
   bot: Bot;
@@ -17,6 +18,7 @@ export default class CommandHandler {
 
     this.registerCommand(new DefineCommand(this));
     this.registerCommand(new FindWordCommand(this));
+    this.registerCommand(new TranslationsCommand(this));
   }
 
   public registerCommand(command: Command) {
