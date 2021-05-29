@@ -65,30 +65,22 @@ export default class Bot extends discord.Client {
         query,
         words.length > 1 ? `${i + 1} / ${words.length}` : undefined
       );
-      let message = previousMessage;
-      if (message) {
-        await message.edit(embed);
-      } else {
-        message = await m.channel.send(embed);
-      }
+      const message =
+        previousMessage === undefined
+          ? await m.channel.send(embed)
+          : await previousMessage?.edit(embed);
 
-      if (i > 0) {
-        await message.react("◀️");
-        const filter = (r: MessageReaction) => r.emoji.name === "◀️";
+      const createButton = async (emoji: string, page: number) => {
+        await message.react(emoji);
+        const filter = (r: MessageReaction) => r.emoji.name === emoji;
         const collector = message.createReactionCollector(filter);
-        collector.on("collect", async () => {
-          await define(i - 1, message);
-        });
-      }
+        const callback = async () => await define(page, message);
+        collector.on("collect", callback);
+        collector.on("remove", callback);
+      };
 
-      if (i + 1 < words.length) {
-        await message.react("▶️");
-        const filter = (r: MessageReaction) => r.emoji.name === "▶️";
-        const collector = message.createReactionCollector(filter);
-        collector.on("collect", async () => {
-          await define(i + 1, message);
-        });
-      }
+      await createButton("◀️", Math.max(i - 1, 0));
+      await createButton("▶️", Math.min(i + 1, words.length - 1));
     };
 
     words.length
