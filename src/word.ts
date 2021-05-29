@@ -40,7 +40,12 @@ function getColour(word: Word | TrigQuote) {
 }
 
 function isWord(object: any): object is Word {
-  return "word" in object && "translation" in object && "etymology" in object;
+  return (
+    object &&
+    "word" in object &&
+    "translation" in object &&
+    "etymology" in object
+  );
 }
 
 export function getEmbed(

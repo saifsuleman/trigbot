@@ -59,16 +59,16 @@ export default class Bot extends discord.Client {
     query: string
   ) {
     const define = async (i: number, previousMessage?: Message) => {
+      console.log(`i: ${i}`);
       const word = words[i];
       const embed = getEmbed(
         word,
         query,
         words.length > 1 ? `${i + 1} / ${words.length}` : undefined
       );
-      const message =
-        previousMessage === undefined
-          ? await m.channel.send(embed)
-          : await previousMessage?.edit(embed);
+      const message = previousMessage
+        ? await previousMessage.edit(embed)
+        : await m.channel.send(embed);
 
       const createButton = async (emoji: string, page: number) => {
         await message.react(emoji);
@@ -77,6 +77,7 @@ export default class Bot extends discord.Client {
         const callback = async () => await define(page, message);
         collector.on("collect", callback);
         collector.on("remove", callback);
+        collector.on("end", () => console.log("I've been killed."));
       };
 
       await createButton("◀️", (i - 1) % words.length);
