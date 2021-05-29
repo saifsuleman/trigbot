@@ -84,6 +84,7 @@ export default class Bot extends discord.Client {
           const filter = (r: MessageReaction) => r.emoji.name === emoji;
           const collector = message.createReactionCollector(filter);
           const callback = async () => {
+            console.log(`Traversing to ${(i + pageOffset) % words.length}`);
             await define((i + pageOffset) % words.length, message, collector);
           };
           collector.on("collect", callback);
