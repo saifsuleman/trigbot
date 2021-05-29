@@ -63,11 +63,7 @@ export default class Bot extends discord.Client {
     m: Message,
     query: string
   ) {
-    const define = async (
-      i: number,
-      previousMessage?: Message,
-      collector?: ReactionCollector
-    ) => {
+    const define = async (i: number, previousMessage?: Message) => {
       const word = words[i];
       const embed = getEmbed(
         word,
@@ -78,24 +74,22 @@ export default class Bot extends discord.Client {
         ? await previousMessage.edit(embed)
         : await m.channel.send(embed);
 
-      const createButton = async (emoji: string, pageOffset: number) => {
+      const createButton = async (emoji: string, page: number) => {
         await message.react(emoji);
-
-        if (!collector) {
-          const filter = (r: MessageReaction) => r.emoji.name === emoji;
-          collector = message.createReactionCollector(filter);
-        }
+        const filter = (r: MessageReaction) => r.emoji.name === emoji;
+        const collector = message.createReactionCollector(filter);
 
         const callback = async () => {
-          console.log(`Traversing to ${(i + pageOffset) % words.length}`);
-          await define((i + pageOffset) % words.length, message);
+          collector.off("collect", callback);
+          collector.off("remove", callback);
+          await define(page, message);
         };
         collector.on("collect", callback);
         collector.on("remove", callback);
       };
 
-      await createButton("◀️", -1);
-      await createButton("▶️", 1);
+      await createButton("◀️", (i - 1) % words.length);
+      await createButton("▶️", (i + 1) % words.length);
     };
 
     words.length
