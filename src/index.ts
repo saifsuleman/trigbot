@@ -96,7 +96,7 @@ export default class Bot extends discord.Client {
         ? await previousMessage.edit(embed)
         : await m.channel.send(embed);
 
-      if (!previousMessage) {
+      if (!previousMessage && words.length > 1) {
         await message.react("◀️");
         await message.react("▶️");
         await createCollector(message);
