@@ -74,6 +74,9 @@ export default class Bot extends discord.Client {
         ? await previousMessage.edit(embed)
         : await m.channel.send(embed);
 
+      await message.react("◀️");
+      await message.react("▶️");
+
       const filter = (r: MessageReaction) =>
         ["◀️", "▶️"].includes(r.emoji.name);
       const reactions = await message.awaitReactions(filter);
