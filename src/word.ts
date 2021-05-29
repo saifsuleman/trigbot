@@ -57,7 +57,7 @@ export function getEmbed(
     const word = content as Word;
     const words = word.word.split(" ").length;
     let embed = new MessageEmbed()
-      .setTitle(`Definition: ${query}`)
+      .setTitle(`Definition: '${query}'`)
       .setFooter(footer)
       .setColor(getColour(word))
       .addFields(
@@ -70,7 +70,7 @@ export function getEmbed(
 
   const quote = content as TrigQuote;
   let embed = new MessageEmbed()
-    .setTitle(`Translation: ${query}`)
+    .setTitle(`Translation: '${query}'`)
     .setFooter(footer)
     .setColor(getColour(quote))
     .addFields(
