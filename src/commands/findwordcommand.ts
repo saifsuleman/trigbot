@@ -21,17 +21,13 @@ export default class FindWordCommand implements Command {
 
     const query = args.join(" ");
     const wordFilter = (word: Word) =>
-      has(query, word.word) ||
-      has(query, word.translation) ||
-      has(query, word.etymology);
+      has(query, word.word) || has(query, word.translation);
     const words: (TrigQuote | Word)[] = this.commandHandler.bot
       .getDictionary()
       .filter(wordFilter);
 
     const quoteFilter = (quote: TrigQuote) =>
-      has(query, quote.translation) ||
-      has(query, quote.trigedasleng) ||
-      has(query, quote.etymology);
+      has(query, quote.translation) || has(query, quote.trigedasleng);
     const quotes: (TrigQuote | Word)[] = this.commandHandler.bot
       .getTranslations()
       .filter(quoteFilter);
