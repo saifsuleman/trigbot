@@ -74,7 +74,10 @@ export default class Bot extends discord.Client {
         await message.react(emoji);
         const filter = (r: MessageReaction) => r.emoji.name === emoji;
         const collector = message.createReactionCollector(filter);
-        const callback = async () => await define(page, message);
+        const callback = async () => {
+          console.log(`Button pushed: ${emoji}: ${page}`);
+          await define(page, message);
+        };
         collector.on("collect", callback);
         collector.on("remove", callback);
         collector.on("end", () => console.log("I've been killed."));
