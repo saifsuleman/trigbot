@@ -85,13 +85,13 @@ export default class Bot extends discord.Client {
 
       const callback = async (reaction: MessageReaction) => {
         collector.off("collect", callback);
-        collector.off("dispose", callback);
+        collector.off("remove", callback);
 
         if (reaction.emoji.name === "◀️") await define(i - 1, message);
         if (reaction.emoji.name === "▶️") await define(i + 1, message);
       };
       collector.on("collect", callback);
-      collector.on("dispose", callback);
+      collector.on("remove", callback);
     };
 
     words.length
