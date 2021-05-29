@@ -79,11 +79,13 @@ export default class Bot extends discord.Client {
 
       const filter = (r: MessageReaction) =>
         ["◀️", "▶️"].includes(r.emoji.name);
-      const collector = message.createReactionCollector(filter);
+      const collector = message.createReactionCollector(filter, {
+        dispose: true,
+      });
 
       const callback = async (reaction: MessageReaction) => {
         collector.off("collect", callback);
-        collector.off("remove", callback);
+        collector.off("dispose", callback);
 
         if (reaction.emoji.name === "◀️") await define(i - 1, message);
         if (reaction.emoji.name === "▶️") await define(i + 1, message);
