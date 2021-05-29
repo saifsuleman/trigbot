@@ -74,22 +74,23 @@ export default class Bot extends discord.Client {
         ? await previousMessage.edit(embed)
         : await m.channel.send(embed);
 
-      await message.react("◀️");
-      await message.react("▶️");
+      const createButton = async (emoji: string, page: number) => {
+        await message.react(emoji);
 
-      const filter = (r: MessageReaction) =>
-        ["◀️", "▶️"].includes(r.emoji.name);
-      const reactions = await message.awaitReactions(filter);
+        const filter = (r: MessageReaction) => r.emoji.name === emoji;
+        const collector = message.createReactionCollector(filter);
+        const callback = async () => {
+          collector.removeAllListeners("collect");
+          collector.removeAllListeners("remove");
 
-      for (let reaction of reactions.values()) {
-        if (reaction.emoji.name === "◀️") {
-          await define((i - 1) % words.length, message);
-        }
+          await define(page, message);
+        };
+        collector.on("collect", callback);
+        collector.on("remove", callback);
+      };
 
-        if (reaction.emoji.name === "▶️") {
-          await define((i + 1) % words.length, message);
-        }
-      }
+      await createButton("◀️", i - 1);
+      await createButton("▶️", i + 1);
     };
 
     words.length
