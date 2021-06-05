@@ -24,7 +24,7 @@ export interface TrigQuote {
   source: string;
 }
 
-function getColour(word: Word | TrigQuote) {
+export function getColour(word: Word | TrigQuote) {
   if (isWord(word)) {
     switch (word.filter) {
       case "canon":
@@ -39,13 +39,18 @@ function getColour(word: Word | TrigQuote) {
   return "#4287f5";
 }
 
-function isWord(object: any): object is Word {
-  return (
-    object &&
-    "word" in object &&
-    "translation" in object &&
-    "etymology" in object
-  );
+export function isWord(object: any): object is Word {
+  const keys = ["word", "translation", "etymology"];
+  return hasKeys(object, keys);
+}
+
+export function isQuote(object: any): object is TrigQuote {
+  const keys = ["trigedasleng", "translation", "etymology"];
+  return hasKeys(object, keys);
+}
+
+function hasKeys(object: any, keys: string[]): boolean {
+  return object && keys.every((key: string) => key in object);
 }
 
 export function getEmbed(
