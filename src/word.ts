@@ -24,6 +24,24 @@ export interface TrigQuote {
   source: string;
 }
 
+export interface TrigPair {
+  trig: string;
+  english: string;
+}
+
+export function getTrigPair(word: Word | TrigQuote): TrigPair {
+  if (isQuote(word)) {
+    return {
+      trig: word.trigedasleng,
+      english: word.translation,
+    };
+  }
+  return {
+    trig: word.word,
+    english: word.translation,
+  };
+}
+
 export function getColour(word: Word | TrigQuote) {
   if (isWord(word)) {
     switch (word.filter) {
