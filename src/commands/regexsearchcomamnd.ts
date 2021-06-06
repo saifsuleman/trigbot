@@ -11,7 +11,7 @@ export default class RegexSearchCommand implements Command {
   commandHandler: CommandHandler;
 
   constructor(commandHandler: CommandHandler) {
-    this.id = "regexsearch";
+    this.id = "regex";
     this.commandHandler = commandHandler;
   }
 
