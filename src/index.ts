@@ -36,9 +36,16 @@ export default class Bot extends discord.Client {
     this.on("ready", () => {
       if (this.user) console.log(`Connected as: ${this.user.tag}`);
     });
-    this.on("message", (m: Message) => {
+    this.on("message", async (m: Message) => {
       if (m.author.bot || m.author === this.user) return;
-      this.commandHandler.onMessage(m);
+
+      try {
+        await this.commandHandler.onMessage(m);
+      } catch (e: any) {
+        try {
+          await m.channel.send(`:( ${e}`);
+        } catch {}
+      }
     });
   }
 
