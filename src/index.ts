@@ -1,10 +1,5 @@
 import axios from "axios";
-import discord, {
-  Message,
-  MessageEmbed,
-  MessageReaction,
-  ReactionCollector,
-} from "discord.js";
+import discord, { Message, MessageReaction } from "discord.js";
 import CommandHandler from "./commandhandler";
 import { Word, getEmbed, TrigQuote } from "./word";
 import dotenv from "dotenv";
